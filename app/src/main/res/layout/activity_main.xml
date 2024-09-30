@@ -64,6 +64,7 @@
         android:orientation="horizontal">
 
     <androidx.cardview.widget.CardView
+        android:id="@+id/cv_laundry"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/md"
@@ -92,6 +93,7 @@
     </androidx.cardview.widget.CardView>
 
     <androidx.cardview.widget.CardView
+        android:id="@+id/cv_layanan"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/md"
@@ -126,7 +128,9 @@
         android:layout_height="wrap_content"
         android:weightSum="2"
         android:orientation="horizontal">
+
     <androidx.cardview.widget.CardView
+        android:id="@+id/cv_pelanggan"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/md"
@@ -154,6 +158,7 @@
     </androidx.cardview.widget.CardView>
 
     <androidx.cardview.widget.CardView
+        android:id="@+id/cv_promo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/md"

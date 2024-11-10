@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
+import humayrafahreri.laundryapps.Pelanggan.PelangganActivity;
 import humayrafahreri.laundryapps.R;
 import humayrafahreri.laundryapps.adapter.AdapterLayanan;
 import humayrafahreri.laundryapps.database.SQLiteHelper;
@@ -33,7 +34,6 @@ public class LayananActivity extends AppCompatActivity {
     ArrayList<ModelLayanan> list;
     ProgressDialog progressDialog;
     AlphaAnimation btnAnimasi = new AlphaAnimation(1F, 0.5F);
-
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +42,8 @@ public class LayananActivity extends AppCompatActivity {
         setContentView(R.layout.activity_layanan);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main),
                 (v, insets) -> {
-                    Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+                    Insets systemBars =
+                    insets.getInsets(WindowInsetsCompat.Type.systemBars());
                     v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
                     return insets;
                 });
@@ -58,7 +59,12 @@ public class LayananActivity extends AppCompatActivity {
             RecyclerView.ViewHolder viewHolder = (RecyclerView.ViewHolder) v.getTag();
             int position = viewHolder.getAdapterPosition();
             ModelLayanan ml = list.get(position);
-            Toast.makeText(LayananActivity.this, "Nama Layanan: " + ml.getNamaLayanan(),
+            Intent intent = new Intent(humayrafahreri.laundryapps.Layanan.LayananActivity.this, LayananEditActivity.class);
+            intent.putExtra("ID", ml.getId());
+            intent.putExtra("TIPE", ml.getNamaLayanan());
+            intent.putExtra("HARGA", ml.getHarga());
+            startActivity(intent);
+            Toast.makeText(LayananActivity.this, "" +ml.getNamaLayanan(),
                     Toast.LENGTH_SHORT).show();
         }
     };
@@ -70,13 +76,7 @@ public class LayananActivity extends AppCompatActivity {
         try {
             List<ModelLayanan> layananList = db.getLayanan();
             if (layananList.size() > 0) {
-                for (ModelLayanan layanan : layananList) {
-                    ModelLayanan ml = new ModelLayanan();
-                    ml.setId(layanan.getId());
-                    ml.setNamaLayanan(layanan.getNamaLayanan());
-                    ml.setHarga(layanan.getHarga());
-                    list.add(ml);
-                }
+                list.addAll(layananList);
                 adapterLayanan = new AdapterLayanan(this, list);
                 adapterLayanan.notifyDataSetChanged();
                 rvLayanan.setAdapter(adapterLayanan);
@@ -86,6 +86,8 @@ public class LayananActivity extends AppCompatActivity {
             }
         } catch (Exception e) {
             e.printStackTrace();
+        } finally{
+            progressDialog.dismiss();
         }
     }
 
@@ -93,6 +95,7 @@ public class LayananActivity extends AppCompatActivity {
         btnLayAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                v.startAnimation(btnAnimasi);
                 startActivity(new Intent(LayananActivity.this, LayananAddActivity.class));
             }
         });
@@ -115,5 +118,11 @@ public class LayananActivity extends AppCompatActivity {
         progressDialog.setMessage("Loading Data..");
         progressDialog.setCancelable(false);
         progressDialog.show();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getData(); // Memuat ulang data setelah penghapusan atau pembaruan
     }
 }

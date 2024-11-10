@@ -61,6 +61,12 @@ public class PelangganActivity extends AppCompatActivity {
                             v.getTag();
                     int position = viewHolder.getAdapterPosition();
                     ModelPelanggan mp = list.get(position);
+                    Intent intent = new Intent(humayrafahreri.laundryapps.Pelanggan.PelangganActivity.this,PelangganEditActivity.class);
+                            intent.putExtra("ID", mp.getId());
+                            intent.putExtra("NAMA", mp.getNama());
+                            intent.putExtra("EMAIL", mp.getEmail());
+                            intent.putExtra("HP", mp.getHp());
+                            startActivity(intent);
                     Toast.makeText(PelangganActivity.this, "" +mp.getNama(),
                             Toast.LENGTH_SHORT).show();
                 }
@@ -68,36 +74,28 @@ public class PelangganActivity extends AppCompatActivity {
     private void getData() {
         list.clear();
         showMsg();
-        progressDialog.dismiss();
         try {
             List<ModelPelanggan> p = db.getPelanggan();
             if (p.size() > 0){
-                for (ModelPelanggan pel : p){
-                    ModelPelanggan mp = new ModelPelanggan();
-                    mp.setId(pel.getId());
-                    mp.setNama(pel.getNama());
-                    mp.setEmail(pel.getEmail());
-                    mp.setHp(pel.getHp());
-                    list.add(mp);
-                }
-                adapterPelanggan = new AdapterPelanggan(this, list);
-                adapterPelanggan.notifyDataSetChanged();
-                rvPelanggan.setAdapter(adapterPelanggan);
-                adapterPelanggan.setOnItemClickListener(onClickListener);
+                    list.addAll(p);  // Simplified adding all data
+                    adapterPelanggan = new AdapterPelanggan(this, list);
+                    rvPelanggan.setAdapter(adapterPelanggan);
+                    adapterPelanggan.setOnItemClickListener(onClickListener);  // Handle click event
+                    adapterPelanggan.notifyDataSetChanged();
             }else{
                 Toast.makeText(this, "Data tidak ditemukan",
                         Toast.LENGTH_SHORT).show();
             }
         }catch (Exception e){
+            e.printStackTrace();
+        }finally{
+            progressDialog.dismiss();
         }
     }
     private void eventHandling() {
-        btnPelAdd.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(PelangganActivity.this,
-                        PelangganAddActivity.class));
-            }
+        btnPelAdd.setOnClickListener(v -> {
+            v.startAnimation(btnAnimasi);
+            startActivity(new Intent(PelangganActivity.this, PelangganAddActivity.class));
         });
     }
     private void setView() {
@@ -106,6 +104,7 @@ public class PelangganActivity extends AppCompatActivity {
         btnPelAdd = (Button) findViewById(R.id.btnPelAdd);
         rvPelanggan = (RecyclerView) findViewById(R.id.rvPelanggan);
         list = new ArrayList<>();
+
         LinearLayoutManager llm = new LinearLayoutManager(this);
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         rvPelanggan.setHasFixedSize(true);
@@ -116,5 +115,10 @@ public class PelangganActivity extends AppCompatActivity {
         progressDialog.setMessage("Loading Data..");
         progressDialog.setCancelable(false);
         progressDialog.show();
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getData(); // Memuat ulang data setelah penghapusan atau pembaruan
     }
 }
